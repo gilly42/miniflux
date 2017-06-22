@@ -99,6 +99,14 @@ function update_feed_items($user_id, $feed_id, array $items, $rtl = false, array
                 $values['user_id'] = $user_id;
                 $values['feed_id'] = $feed_id;
                 $values['status'] = STATUS_UNREAD;
+                if ( $db->table(TABLE)
+                        ->join('feeds','user_id','user_id')
+                        ->eq('items.user_id', $user_id)
+                        ->eq('checksum', $item->getId())
+                        ->findOneColumn('items.id')
+                ) {
+                    $values['status'] = STATUS_REMOVED;
+                }
                 $item_id = $db->table(TABLE)->persist($values);
             }
 
